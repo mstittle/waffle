@@ -33,21 +33,22 @@ import org.mockito.Mockito;
 public class SimpleHttpResponse extends HttpServletResponseWrapper {
 	private int _status = 500;
 	private Map<String, List<String>> _headers = new HashMap<String, List<String>>();
-	
+
 	private final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 	private final ServletOutputStream out = new ServletOutputStream() {
-    @Override
-    public void write(int b) throws IOException {
-      bytes.write(b);
-    }
-  };
-  private final PrintWriter writer = new PrintWriter(bytes);
+		@Override
+		public void write(int b) throws IOException {
+			bytes.write(b);
+		}
+	};
 	
+	private final PrintWriter writer = new PrintWriter(bytes);
+
 	public SimpleHttpResponse() {
-    super(Mockito.mock(HttpServletResponse.class));
+		super(Mockito.mock(HttpServletResponse.class));
 	}
-	
-  public int getStatus() {
+
+	public int getStatus() {
 		return _status;
 	}
 
@@ -94,12 +95,12 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
 			}
 		}
 	}
-	
+
 	/**
 	 * Use this for testing the number of headers
 	 */
 	public int getHeaderNamesSize() {
-	  return _headers.size();
+		return _headers.size();
 	}
 
 	public String[] getHeaderValues(String headerName) {
@@ -132,19 +133,24 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
 	public void sendError(int rc) {
 		_status = rc;
 	}
-	
+
 	@Override
 	public PrintWriter getWriter() {
-	  return writer;
+		return writer;
 	}
 
-  @Override
-  public ServletOutputStream getOutputStream() throws IOException {
-    return out;
-  }
+	@Override
+	public ServletOutputStream getOutputStream() throws IOException {
+		return out;
+	}
+
+	public String getOutputText() {
+		writer.flush();
+		return bytes.toString();
+	}
 	
-  public String getOutputText() {
-    writer.flush();
-    return bytes.toString();
-  }
+	@Override
+	public void setContentLength(int len) {
+		setHeader("Content-Length", Integer.toString(len));
+	}
 }

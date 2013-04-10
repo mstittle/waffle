@@ -174,11 +174,29 @@ public class NegotiateSecurityFilterTests {
 					break;
 				}
 
+				assertEquals(401, response.getStatus());
+
+				// security package requested is one negotiate continues with
 				assertTrue(response.getHeader("WWW-Authenticate").startsWith(
 						securityPackage + " "));
+
+				// keep-alive, NTLM is a connection-oriented protocol
 				assertEquals("keep-alive", response.getHeader("Connection"));
-				assertEquals(2, response.getHeaderNamesSize());
-				assertEquals(401, response.getStatus());
+
+				// Connection: keep-alive
+				// WWW-Authenticate: ...
+				// Content-Length: ...
+				assertEquals(3, response.getHeaderNamesSize());
+
+				// response has a body and a content length (.NET clients
+				// require this)
+				int contentLength = Integer.parseInt(response
+						.getHeader("Content-Length"));
+				assertTrue(contentLength > 0);
+				String content = response.getOutputText();
+				assertEquals(contentLength, content.length());
+
+				// continue token
 				String continueToken = response.getHeader("WWW-Authenticate")
 						.substring(securityPackage.length() + 1);
 				byte[] continueTokenBytes = Base64.decode(continueToken);
@@ -304,7 +322,8 @@ public class NegotiateSecurityFilterTests {
 
 	@Test
 	public void testInitTwoSecurityFilterProviders() throws ServletException {
-		// make sure that providers can be specified separated by any kind of space
+		// make sure that providers can be specified separated by any kind of
+		// space
 		SimpleFilterConfig filterConfig = new SimpleFilterConfig();
 		filterConfig
 				.setParameter(

@@ -114,6 +114,9 @@ public class NegotiateSecurityFilterProvider implements SecurityFilterProvider {
 		if (securityContext.isContinue() || ntlmPost) {
 			response.setHeader("Connection", "keep-alive");
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			String body = "Unauthorized";
+			response.getWriter().write(body);
+			response.setContentLength(body.length());
 			response.flushBuffer();
 			return null;
 		}
