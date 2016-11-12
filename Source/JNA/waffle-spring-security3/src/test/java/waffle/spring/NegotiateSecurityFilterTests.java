@@ -1,19 +1,18 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.spring;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +32,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 
 import waffle.mock.http.SimpleFilterChain;
@@ -137,7 +135,7 @@ public class NegotiateSecurityFilterTests {
         final SimpleHttpRequest request = new SimpleHttpRequest();
 
         final String clientToken = BaseEncoding.base64().encode(
-                WindowsAccountImpl.getCurrentUsername().getBytes(Charsets.UTF_8));
+                WindowsAccountImpl.getCurrentUsername().getBytes(StandardCharsets.UTF_8));
         request.addHeader("Authorization", securityPackage + " " + clientToken);
 
         final SimpleHttpResponse response = new SimpleHttpResponse();
@@ -194,7 +192,7 @@ public class NegotiateSecurityFilterTests {
         final SimpleFilterChain filterChain = new SimpleFilterChain();
         final SimpleHttpRequest request = new SimpleHttpRequest();
 
-        final String clientToken = BaseEncoding.base64().encode("Guest".getBytes(Charsets.UTF_8));
+        final String clientToken = BaseEncoding.base64().encode("Guest".getBytes(StandardCharsets.UTF_8));
         request.addHeader("Authorization", securityPackage + " " + clientToken);
 
         final SimpleHttpResponse response = new SimpleHttpResponse();

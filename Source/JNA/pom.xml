@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Waffle (https://github.com/dblock/waffle)
+
+    Copyright (c) 2010-2016 Application Security, Inc.
+
+    All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+    Public License v1.0 which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html.
+
+    Contributors: Application Security, Inc.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>com.github.dblock.waffle</groupId>
     <artifactId>waffle-parent</artifactId>
-    <version>1.8.1-SNAPSHOT</version>
+    <version>1.8.2-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <name>waffle-parent</name>
     <description>Parent POM for WAFFLE</description>
-    <url>http://dblock.github.com/waffle/</url>
+    <url>https://dblock.github.com/waffle/</url>
     <inceptionYear>2010</inceptionYear>
     <organization>
         <name>com.github.dblock</name>
@@ -20,6 +35,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <developers>
         <developer>
             <id>dblock</id>
@@ -42,7 +58,7 @@
         <contributor>
             <name>Jeremy Landis</name>
             <email>jeremylandis@hotmail.com</email>
-            <url>http://www.linkedin.com/pub/jeremy-landis/19/b27/548/</url>
+            <url>https://www.linkedin.com/pub/jeremy-landis/19/b27/548/</url>
             <organization>hazendaz</organization>
             <organizationUrl>https://github.com/hazendaz</organizationUrl>
             <roles>
@@ -54,9 +70,11 @@
             </properties>
         </contributor>
     </contributors>
+
     <prerequisites>
         <maven>3.2.5</maven>
     </prerequisites>
+
     <modules>
         <module>waffle-demo</module>
         <module>waffle-distro</module>
@@ -69,7 +87,9 @@
         <module>waffle-tomcat6</module>
         <module>waffle-tomcat7</module>
         <module>waffle-tomcat8</module>
+        <module>waffle-tomcat85</module>
     </modules>
+
     <scm>
         <connection>scm:git:ssh://git@github.com/dblock/waffle.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/dblock/waffle.git</developerConnection>
@@ -88,7 +108,7 @@
         <site>
             <id>gh-pages</id>
             <name>Waffle GitHub Pages</name>
-            <url>git:ssh://git@github.com/dblock/waffle.git?gh-pages#</url>
+            <url>github:https://dblock.github.io/waffle/</url>
         </site>
         <snapshotRepository>
             <id>ossrh</id>
@@ -99,6 +119,7 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
+
     <properties>
         <copyright>2015</copyright>
         <jacoco.minimum.coverage>0.0</jacoco.minimum.coverage>
@@ -112,26 +133,30 @@
         <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <src.relative.loc>.</src.relative.loc>
-
-        <assertj.version>2.2.0</assertj.version>
-        <cglib.version>3.1</cglib.version>
+        <assertj.version>2.5.0</assertj.version>
         <contiperf.version>2.3.4</contiperf.version>
-        <jmockit.version>1.19</jmockit.version>
+        <jmockit.version>1.29</jmockit.version>
+        <jsr305.version>3.0.1</jsr305.version>
         <junit.version>4.12</junit.version>
-        <mockito.version>1.10.19</mockito.version>
-        <slf4j.version>1.7.12</slf4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
 
         <signature.artifact>java17</signature.artifact>
         <signature.version>1.0</signature.version>
     </properties>
+
     <dependencies>
-        <dependency>
-            <!-- prevent warning: SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder". -->
+        <dependency><!-- prevent warning: SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder". -->
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>jsr305</artifactId>
+            <version>${jsr305.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -141,29 +166,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>${cglib.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <version>${jmockit.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <!-- Use mockito core as mockito all uses old version of hamcrest -->
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>hamcrest-core</artifactId>
-                    <groupId>org.hamcrest</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -179,6 +185,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -186,12 +193,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.6.1</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.6.0</version>
                     <configuration>
                         <!-- Slightly faster builds, see https://issues.apache.org/jira/browse/MCOMPILER-209 -->
                         <useIncrementalCompilation>false</useIncrementalCompilation>
@@ -220,17 +227,17 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.7</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.4</version>
+                    <version>3.5.1</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.doxia</groupId>
                             <artifactId>doxia-module-markdown</artifactId>
-                            <version>1.6</version>
+                            <version>1.7</version>
                         </dependency>
                         <dependency>
                             <groupId>net.trajano.wagon</groupId>
@@ -241,7 +248,7 @@
                         <dependency>
                             <groupId>org.apache.maven.skins</groupId>
                             <artifactId>maven-fluido-skin</artifactId>
-                            <version>1.4</version>
+                            <version>1.5</version>
                         </dependency>
                         <dependency>
                             <groupId>org.apache.maven.wagon</groupId>
@@ -253,9 +260,10 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <version>2.19.1</version>
                     <configuration>
                         <includes>
+                            <include>**/*Test.java</include>
                             <include>**/*Tests.java</include>
                         </includes>
                         <excludes>
@@ -267,39 +275,39 @@
                 <plugin>
                     <groupId>pl.project13.maven</groupId>
                     <artifactId>git-commit-id-plugin</artifactId>
-                    <version>2.2.0</version>
+                    <version>2.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.9.1</version>
+                    <version>1.12</version>
                 </plugin>
                 <!-- Packaging types / tools -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <!-- Reporting plugins -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>2.16</version>
+                    <version>2.17</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.10.3</version>
+                    <version>2.10.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.5</version>
+                    <version>3.7</version>
                 </plugin>
                 <!-- Tools -->
                 <plugin>
@@ -323,7 +331,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.5.2</version>
+                    <version>2.5.3</version>
                     <configuration>
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <useReleaseProfile>false</useReleaseProfile>
@@ -334,13 +342,13 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.0.1</version>
                 </plugin>
                 <!-- External Tools -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>3.0.2</version>
+                    <version>3.0.4</version>
                 </plugin>
                 <plugin>
                     <groupId>com.tunyk.mvn.plugins.htmlcompressor</groupId>
@@ -362,17 +370,17 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.7.5.201505241946</version>
+                    <version>0.7.7.201606060606</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eluder.coveralls</groupId>
                     <artifactId>coveralls-maven-plugin</artifactId>
-                    <version>4.0.0</version>
+                    <version>4.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>tidy-maven-plugin</artifactId>
-                    <version>1.0-beta-1</version>
+                    <version>1.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>net.alchim31.maven</groupId>
@@ -394,32 +402,33 @@
                         <dependency>
                             <groupId>com.github.hazendaz</groupId>
                             <artifactId>build-tools</artifactId>
-                            <version>1.1.1</version>
+                            <version>1.1.2</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>com.mycila</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.11</version>
+                    <version>3.0</version>
                     <configuration>
-                        <header>${src.relative.loc}/license.txt</header>
+                        <header>${main.basedir}/license.txt</header>
                         <excludes>
-                            <exclude>target/**</exclude>
-                            <exclude>**/.gitignore</exclude>
-                            <exclude>**/*.txt</exclude>
-                            <exclude>**/*.xml</exclude>
-                            <exclude>**/*.properties</exclude>
-                            <exclude>**/*.html</exclude>
-                            <exclude>**/*.css</exclude>
+                            <exclude>.factorypath</exclude>
+                            <exclude>.gitattributes</exclude>
+                            <exclude>license.txt</exclude>
                         </excludes>
-                        <includes>
-                            <include>**/*.java</include>
-                        </includes>
                         <mapping>
-                            <java>JAVADOC_STYLE</java>
+                            <conf>DOUBLESLASH_STYLE</conf>
+                            <policy>DOUBLESLASH_STYLE</policy>
                         </mapping>
                     </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.mycila</groupId>
+                            <artifactId>license-maven-plugin-git</artifactId>
+                            <version>3.0</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- Report Only -->
                 <plugin>
@@ -435,32 +444,32 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-changes-plugin</artifactId>
-                    <version>2.11</version>
+                    <version>2.12</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-provider-jgit</artifactId>
-                            <version>1.9.4</version>
+                            <version>1.9.5</version>
                         </dependency>
                         <dependency>
                             <groupId>com.googlecode.javaewah</groupId>
                             <artifactId>JavaEWAH</artifactId>
-                            <version>1.0.7</version>
+                            <version>1.1.6</version>
                         </dependency>
                         <dependency>
                             <groupId>com.jcraft</groupId>
                             <artifactId>jsch</artifactId>
-                            <version>0.1.53</version>
+                            <version>0.1.54</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.jgit</groupId>
                             <artifactId>org.eclipse.jgit</artifactId>
-                            <version>4.1.0.201509280440-r</version>
+                            <version>4.5.0.201609210915-r</version>
                         </dependency>
                         <dependency>
                             <groupId>org.codehaus.plexus</groupId>
                             <artifactId>plexus-utils</artifactId>
-                            <version>3.0.22</version>
+                            <version>3.0.24</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -472,12 +481,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.8.1</version>
+                    <version>2.9</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-report-plugin</artifactId>
-                    <version>2.18.1</version>
+                    <version>2.19.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -487,47 +496,49 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>2.3</version>
                 </plugin>
                 <!-- SCM -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-scm-plugin</artifactId>
-                    <version>1.9.4</version>
+                    <version>1.9.5</version>
                     <dependencies>
                         <dependency>
                             <groupId>org.apache.maven.scm</groupId>
                             <artifactId>maven-scm-provider-jgit</artifactId>
-                            <version>1.9.4</version>
+                            <version>1.9.5</version>
                         </dependency>
                         <dependency>
                             <groupId>com.googlecode.javaewah</groupId>
                             <artifactId>JavaEWAH</artifactId>
-                            <version>1.0.7</version>
+                            <version>1.1.6</version>
                         </dependency>
                         <dependency>
                             <groupId>com.jcraft</groupId>
                             <artifactId>jsch</artifactId>
-                            <version>0.1.53</version>
+                            <version>0.1.54</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.jgit</groupId>
                             <artifactId>org.eclipse.jgit</artifactId>
-                            <version>4.1.0.201509280440-r</version>
+                            <version>4.5.0.201609210915-r</version>
                         </dependency>
                         <dependency>
                             <groupId>org.codehaus.plexus</groupId>
                             <artifactId>plexus-utils</artifactId>
-                            <version>3.0.22</version>
+                            <version>3.0.24</version>
                         </dependency>
                     </dependencies>
                 </plugin>
                 <!-- Sonar -->
+                <!-- Works without it so why include it?
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
                     <artifactId>sonar-maven-plugin</artifactId>
-                    <version>2.6</version>
+                    <version>3.0.2</version>
                 </plugin>
+                -->
                 <!-- Wagon -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -538,7 +549,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>animal-sniffer-maven-plugin</artifactId>
-                    <version>1.14</version>
+                    <version>1.15</version>
                     <configuration>
                         <signature>
                             <groupId>org.codehaus.mojo.signature</groupId>
@@ -551,19 +562,25 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>1.3.1</version>
+                    <version>1.4.3</version>
                 </plugin>
                 <!-- Sonatype Release -->
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.6</version>
+                    <version>1.6.7</version>
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>ossrh</serverId>
                         <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     </configuration>
+                </plugin>
+                <!-- Find maven root -->
+                <plugin>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <version>0.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -590,10 +607,12 @@
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
                 <configuration>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
                     <!-- Prevent issues, see https://github.com/ktoso/maven-git-commit-id-plugin/issues/61 -->
                     <gitDescribe>
                         <always>true</always>
                     </gitDescribe>
+                    <runOnlyOnce>true</runOnlyOnce>
                 </configuration>
                 <executions>
                     <execution>
@@ -801,6 +820,23 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Find maven root -->
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>main.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <extensions>
             <extension>
@@ -810,6 +846,7 @@
             </extension>
         </extensions>
     </build>
+
     <reporting>
         <plugins>
             <plugin>
@@ -884,6 +921,7 @@
             </plugin>
         </plugins>
     </reporting>
+
     <profiles>
         <profile>
             <id>checks</id>
@@ -1049,8 +1087,8 @@
             <build>
                 <pluginManagement>
                     <plugins>
-                        <!--This plugin's configuration is used to store 
-                            Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                        <!--This plugin's configuration is used to store Eclipse m2e settings only. It 
+                            has no influence on the Maven build itself. -->
                         <plugin>
                             <groupId>org.eclipse.m2e</groupId>
                             <artifactId>lifecycle-mapping</artifactId>
@@ -1065,6 +1103,19 @@
                                                 <versionRange>[1.3,)</versionRange>
                                                 <goals>
                                                     <goal>html</goal>
+                                                </goals>
+                                            </pluginExecutionFilter>
+                                            <action>
+                                                <ignore />
+                                            </action>
+                                        </pluginExecution>
+                                        <pluginExecution>
+                                            <pluginExecutionFilter>
+                                                <groupId>org.commonjava.maven.plugins</groupId>
+                                                <artifactId>directory-maven-plugin</artifactId>
+                                                <versionRange>[0.1,)</versionRange>
+                                                <goals>
+                                                    <goal>highest-basedir</goal>
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
@@ -1088,7 +1139,7 @@
                                             <pluginExecutionFilter>
                                                 <groupId>com.mycila</groupId>
                                                 <artifactId>license-maven-plugin</artifactId>
-                                                <versionRange>[2.11,)</versionRange>
+                                                <versionRange>[3.0,)</versionRange>
                                                 <goals>
                                                     <goal>format</goal>
                                                 </goals>
@@ -1101,7 +1152,7 @@
                                             <pluginExecutionFilter>
                                                 <groupId>org.jacoco</groupId>
                                                 <artifactId>jacoco-maven-plugin</artifactId>
-                                                <versionRange>[0.7.5.201505241946,)</versionRange>
+                                                <versionRange>[0.7.7.201606060606,)</versionRange>
                                                 <goals>
                                                     <goal>prepare-agent</goal>
                                                 </goals>
@@ -1157,7 +1208,7 @@
                         <groupId>net.revelc.code</groupId>
                         <artifactId>formatter-maven-plugin</artifactId>
                         <configuration>
-                           <configFile>eclipse-formatter-config.xml</configFile>
+                            <configFile>eclipse-formatter-config.xml</configFile>
                         </configuration>
                         <executions>
                             <execution>
@@ -1208,6 +1259,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>java18</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <modules>
+                <module>waffle-tomcat9</module>
+            </modules>
         </profile>
     </profiles>
 </project>

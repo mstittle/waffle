@@ -1,19 +1,18 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.mock.http;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,8 +22,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpSession;
 
 import org.mockito.Mockito;
-
-import com.google.common.collect.Iterators;
 
 /**
  * The Class SimpleHttpRequest.
@@ -123,7 +120,7 @@ public class SimpleHttpRequest extends HttpServletRequestWrapper {
      */
     @Override
     public Enumeration<String> getHeaderNames() {
-        return Iterators.asEnumeration(this.headers.keySet().iterator());
+        return Collections.enumeration(this.headers.keySet());
     }
 
     /*
@@ -233,7 +230,7 @@ public class SimpleHttpRequest extends HttpServletRequestWrapper {
         if (this.queryString != null) {
             for (final String eachParameter : this.queryString.split("[&]")) {
                 final String[] pair = eachParameter.split("=");
-                final String value = (pair.length == 2) ? pair[1] : "";
+                final String value = pair.length == 2 ? pair[1] : "";
                 this.addParameter(pair[0], value);
             }
         }

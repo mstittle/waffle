@@ -1,5 +1,14 @@
 <Project DefaultTargets="all" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" >
-  <Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
+
+  <PropertyGroup>
+    <BuildFolder>$(MSBuildProjectDirectory)\Build</BuildFolder>
+    <ToolFolder>$(MSBuildProjectDirectory)\Tools</ToolFolder>
+    <SourceFolder>$(MSBuildProjectDirectory)\Source</SourceFolder>
+    
+    <MSBuildCommunityTasksPath>$(ToolFolder)\MSBuildTasks\tools</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+
+  <Import Project="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.Targets"/>
   <Import Project="Version.proj"/>
   <PropertyGroup Condition="'$(Configuration)'==''">
     <Configuration>Release</Configuration>
@@ -19,7 +28,7 @@
     <Copyright>Copyright (c) Application Security Inc. &amp; Contributors</Copyright>
     <Trademark>All Rights Reserved</Trademark>
     <MajorVersion>1</MajorVersion>
-    <MinorVersion>7</MinorVersion>
+    <MinorVersion>8</MinorVersion>
   </PropertyGroup>
   <Target Name="all" DependsOnTargets="configurations" Inputs="@(Configuration)" Outputs="target\%(Configuration.FileName)">
     <CallTarget Targets="clean" />
@@ -53,7 +62,7 @@
       <Output TaskParameter="Include" ItemName="UnitTestAssemblies"/>
     </CreateItem>
     <Message Text="@(UnitTestAssemblies)" />
-    <NUnit Assemblies="@(UnitTestAssemblies)" ToolPath="$(NUnitBinDir)" Force32Bit="true" />
+	<exec Command="Tools\NUnit.ConsoleRunner\tools\nunit3-console.exe &quot;@(UnitTestAssemblies)&quot;"/>
   </Target>
   <Target Name="drop" DependsOnTargets="version;configurations" Inputs="@(Configuration)" Outputs="target\%(Configuration.FileName)">
     <CreateItem Include="Source\**\%(Configuration.Identity)/Waffle.*.dll" Exclude="Source\**\%(Configuration.Identity)/Waffle.*UnitTests.dll">
@@ -69,7 +78,10 @@
     <Copy SourceFiles="@(SampleFiles)" DestinationFolder="$(ReleaseDir)\Samples" />
   </Target>
   <Target Name="jar" DependsOnTargets="version">
-    <Exec WorkingDirectory="Source\JNA" Command="mvn clean install" />
+    <exec Condition=" '$(APPVEYOR)' != '' "
+          WorkingDirectory="Source\JNA" Command="mvn clean install -DskipTests" />
+    <exec Condition=" '$(APPVEYOR)' == '' "
+          WorkingDirectory="Source\JNA" Command="mvn clean install" />
     <CreateItem Include="Source\JNA\waffle-distro\target\waffle-distro\**\*.*">
       <Output TaskParameter="Include" ItemName="JnaFiles"/>
     </CreateItem>

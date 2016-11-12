@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.windows.auth.impl;
 
@@ -18,14 +16,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import waffle.windows.auth.IWindowsAccount;
-import waffle.windows.auth.IWindowsAuthProvider;
-import waffle.windows.auth.IWindowsComputer;
-import waffle.windows.auth.IWindowsCredentialsHandle;
-import waffle.windows.auth.IWindowsDomain;
-import waffle.windows.auth.IWindowsIdentity;
-import waffle.windows.auth.IWindowsSecurityContext;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -43,15 +33,47 @@ import com.sun.jna.platform.win32.WinError;
 import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 import com.sun.jna.ptr.IntByReference;
 
+import waffle.windows.auth.IWindowsAccount;
+import waffle.windows.auth.IWindowsAuthProvider;
+import waffle.windows.auth.IWindowsComputer;
+import waffle.windows.auth.IWindowsCredentialsHandle;
+import waffle.windows.auth.IWindowsDomain;
+import waffle.windows.auth.IWindowsIdentity;
+import waffle.windows.auth.IWindowsSecurityContext;
+
 /**
  * Windows Auth Provider.
- * 
+ *
  * @author dblock[at]dblock[dot]org
  */
 public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
 
+    /**
+     * The Class ContinueContext.
+     */
+    private static class ContinueContext {
+        /** The continue handle. */
+        CtxtHandle                continueHandle;
+
+        /** The server credential. */
+        IWindowsCredentialsHandle serverCredential;
+
+        /**
+         * Instantiates a new continue context.
+         *
+         * @param handle
+         *            the handle
+         * @param windowsCredential
+         *            the windows credential
+         */
+        public ContinueContext(final CtxtHandle handle, final IWindowsCredentialsHandle windowsCredential) {
+            this.continueHandle = handle;
+            this.serverCredential = windowsCredential;
+        }
+    }
+
     /** The continue contexts. */
-    private final Cache<String, CtxtHandle> continueContexts;
+    private final Cache<String, ContinueContext> continueContexts;
 
     /**
      * Instantiates a new windows auth provider impl.
@@ -62,7 +84,7 @@ public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
 
     /**
      * A Windows authentication provider.
-     * 
+     *
      * @param continueContextsTimeout
      *            Timeout for security contexts in seconds.
      */
@@ -84,27 +106,32 @@ public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
             throw new Win32Exception(WinError.SEC_E_INVALID_TOKEN);
         }
 
-        final IWindowsCredentialsHandle serverCredential = new WindowsCredentialsHandleImpl(null,
-                Sspi.SECPKG_CRED_INBOUND, securityPackage);
-        serverCredential.initialize();
+        CtxtHandle continueHandle = null;
+        IWindowsCredentialsHandle serverCredential;
+        ContinueContext continueContext = this.continueContexts.asMap().get(connectionId);
+        if (continueContext != null) {
+            continueHandle = continueContext.continueHandle;
+            serverCredential = continueContext.serverCredential;
+        } else {
+            serverCredential = new WindowsCredentialsHandleImpl(null, Sspi.SECPKG_CRED_INBOUND, securityPackage);
+            serverCredential.initialize();
+        }
 
         WindowsSecurityContextImpl sc;
 
         int rc;
         int tokenSize = Sspi.MAX_TOKEN_SIZE;
 
-        CtxtHandle continueContext;
-        SecBufferDesc pbServerToken;
-        SecBufferDesc pbClientToken;
-        final IntByReference pfClientContextAttr = new IntByReference();
-        final CtxtHandle phNewServerContext = new CtxtHandle();
         do {
-            pbServerToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, tokenSize);
-            pbClientToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, token);
+            final SecBufferDesc pbServerToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, tokenSize);
+            final SecBufferDesc pbClientToken = new SecBufferDesc(Sspi.SECBUFFER_TOKEN, token);
+            final IntByReference pfClientContextAttr = new IntByReference();
 
+            // TODO This is a dead store...do we have a bug?
             continueContext = this.continueContexts.asMap().get(connectionId);
 
-            rc = Secur32.INSTANCE.AcceptSecurityContext(serverCredential.getHandle(), continueContext, pbClientToken,
+            final CtxtHandle phNewServerContext = new CtxtHandle();
+            rc = Secur32.INSTANCE.AcceptSecurityContext(serverCredential.getHandle(), continueHandle, pbClientToken,
                     Sspi.ISC_REQ_CONNECTION, Sspi.SECURITY_NATIVE_DREP, phNewServerContext, pbServerToken,
                     pfClientContextAttr, null);
 
@@ -117,7 +144,7 @@ public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
                 case WinError.SEC_E_BUFFER_TOO_SMALL:
                     tokenSize += Sspi.MAX_TOKEN_SIZE;
                     sc.dispose();
-                    WindowsSecurityContextImpl.dispose(continueContext);
+                    WindowsSecurityContextImpl.dispose(continueHandle);
                     break;
                 case WinError.SEC_E_OK:
                     // the security context received from the client was accepted
@@ -131,13 +158,14 @@ public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
                     break;
                 case WinError.SEC_I_CONTINUE_NEEDED:
                     // the server must send the output token to the client and wait for a returned token
-                    this.continueContexts.put(connectionId, phNewServerContext);
+                    continueContext = new ContinueContext(phNewServerContext, serverCredential);
+                    this.continueContexts.put(connectionId, continueContext);
                     sc.setToken(pbServerToken.getBytes() == null ? new byte[0] : pbServerToken.getBytes().clone());
                     sc.setContinue(true);
                     break;
                 default:
                     sc.dispose();
-                    WindowsSecurityContextImpl.dispose(continueContext);
+                    WindowsSecurityContextImpl.dispose(continueHandle);
                     this.continueContexts.asMap().remove(connectionId);
                     throw new Win32Exception(rc);
             }
@@ -234,7 +262,7 @@ public class WindowsAuthProviderImpl implements IWindowsAuthProvider {
 
     /**
      * Number of elements in the continue contexts map.
-     * 
+     *
      * @return Number of elements in the hash map.
      */
     public int getContinueContextsSize() {

@@ -1,19 +1,18 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.servlet.spi;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidParameterException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Charsets;
 
 import waffle.util.AuthorizationHeader;
 import waffle.windows.auth.IWindowsAuthProvider;
@@ -64,7 +61,7 @@ public class BasicSecurityFilterProvider implements SecurityFilterProvider {
             throws IOException {
 
         final AuthorizationHeader authorizationHeader = new AuthorizationHeader(request);
-        final String usernamePassword = new String(authorizationHeader.getTokenBytes(), Charsets.UTF_8);
+        final String usernamePassword = new String(authorizationHeader.getTokenBytes(), StandardCharsets.UTF_8);
         final String[] usernamePasswordArray = usernamePassword.split(":", 2);
         if (usernamePasswordArray.length != 2) {
             throw new RuntimeException("Invalid username:password in Authorization header.");

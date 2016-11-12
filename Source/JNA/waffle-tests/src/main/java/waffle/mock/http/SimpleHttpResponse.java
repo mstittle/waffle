@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.mock.http;
 
@@ -23,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -56,6 +55,16 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
                                                         @Override
                                                         public void write(final int b) throws IOException {
                                                             SimpleHttpResponse.this.bytes.write(b);
+                                                        }
+
+                                                        @Override
+                                                        public boolean isReady() {
+                                                            return false;
+                                                        }
+
+                                                        @Override
+                                                        public void setWriteListener(WriteListener writeListener) {
+                                                            // Not used
                                                         }
                                                     };
 
@@ -222,7 +231,7 @@ public class SimpleHttpResponse extends HttpServletResponseWrapper {
         try {
             return this.bytes.toString("UTF-8");
         } catch (final UnsupportedEncodingException e) {
-            SimpleHttpResponse.LOGGER.error("{}", e);
+            SimpleHttpResponse.LOGGER.error("", e);
         }
         return null;
     }

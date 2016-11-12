@@ -1,3 +1,25 @@
+1.8.2 (?/??/16)
+================
+* Lots of documentation updates from the community (many thanks!)
+* [#397](https://github.com/dblock/waffle/pull/397): WindowsLoginModule missing roles in Principal. [@devnullpointer](https://github.com/devnullpointer)
+* [#338](https://github.com/dblock/waffle/pull/338): Don't allow SPNEGO NegTokenArg to start re-authentication process [@AriSuutariST](https://github.com/AriSuutariST). 
+* [#342](https://github.com/dblock/waffle/pull/342): Add tomcat 8.5.x support [@hazendaz](https://github.com/hazendaz). 
+* [#357](https://github.com/dblock/waffle/pull/357): Fix security token handle leak in Tomcat. Issue [#355](https://github.com/dblock/waffle/issues/355)
+* [#382](https://github.com/dblock/waffle/pull/382): Bug fix in DelegatingNegotiateSecurityFilter when no custom authentication provider was declared [@Unaor]
+
+1.8.1 (2/10/16)
+================
+
+* Official notification dropping long-term support on 1.7.x branch
+* Rework .net build to be mostly automatic using nuget
+* Change .net target to more modern .net 4.0 framework
+* [#309](https://github.com/dblock/waffle/pull/309): Added impersonation support on spring-security filters [@sergey-podolsky](https://github.com/sergey-podolsky).
+* [#296](https://github.com/dblock/waffle/pull/296): Added Tomcat 9 support.
+* [#268](https://github.com/dblock/waffle/pull/301): Cannot log in automatically on machine where Tomcat service is running
+* [#274](https://github.com/dblock/waffle/pull/274): Update WindowsSecurityContextImpl.java to handle SEC_E_BUFFER_TOO_SMALL
+* [#128](https://github.com/dblock/waffle/pull/128): Update WindowsSecurityContext.cs to handle SEC_E_BUFFER_TOO_SMALL
+* [#310](https://github.com/dblock/waffle/pull/310): Add equals and hashCode to WindowsPrincipal
+
 1.8.0 (09/10/15)
 ================
 *** Java Requirement now 1.7 ***
@@ -7,10 +29,9 @@
 * [#226](https://github.com/dblock/waffle/pull/226): Moving base to java 1.7
 * [#239](https://github.com/dblock/waffle/pull/239): Fix handle leak in LSASS.exe process.
 
-1.7.x Branch News (on 1.7.4)
-=================
-* Created 1.7.x branch for spring 2, tomcat 5, and java 6 continued support for one year.  Only complete show stoppers to be addressed there.
-* [#239]: Fix handle leak in LSASS.exe process. PENDING BACKPORT
+1.7.5 (11/7/15)
+===============
+* Backport [#239](https://github.com/dblock/waffle/pull/239): Fix handle leak in LSASS.exe process.
 
 1.7.4 (05/12/15)
 ================

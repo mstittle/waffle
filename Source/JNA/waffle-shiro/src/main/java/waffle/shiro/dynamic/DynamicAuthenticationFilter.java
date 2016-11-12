@@ -1,27 +1,26 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.shiro.dynamic;
 
-import waffle.shiro.negotiate.NegotiateAuthenticationFilter;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import waffle.shiro.negotiate.NegotiateAuthenticationFilter;
 
 /**
  * When combined with the {@link waffle.shiro.negotiate.NegotiateAuthenticationStrategy}, this filter can be used to
@@ -134,6 +133,7 @@ public class DynamicAuthenticationFilter extends FormAuthenticationFilter {
          * waffle.shiro.negotiate.NegotiateAuthenticationFilter#onLoginSuccess(org.apache.shiro.authc.AuthenticationToken
          * , org.apache.shiro.subject.Subject, javax.servlet.ServletRequest, javax.servlet.ServletResponse)
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         protected boolean onLoginSuccess(final AuthenticationToken token, final Subject subject,
                 final ServletRequest request, final ServletResponse response) throws Exception {
@@ -178,6 +178,7 @@ public class DynamicAuthenticationFilter extends FormAuthenticationFilter {
          * AuthenticationToken, org.apache.shiro.subject.Subject, javax.servlet.ServletRequest,
          * javax.servlet.ServletResponse)
          */
+        @SuppressWarnings("synthetic-access")
         @Override
         protected boolean onLoginSuccess(final AuthenticationToken token, final Subject subject,
                 final ServletRequest request, final ServletResponse response) throws Exception {

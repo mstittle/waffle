@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.apache.catalina;
 
@@ -20,7 +18,8 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.connector.Request;
-import org.mockito.Mockito;
+
+import mockit.Mocked;
 
 /**
  * Simple HTTP Request.
@@ -70,7 +69,8 @@ public class SimpleHttpRequest extends Request {
     private byte[]                    content;
 
     /** The http session. */
-    private SimpleHttpSession         httpSession;
+    @Mocked
+    private HttpSession               httpSession;
 
     /** The principal. */
     private Principal                 principal;
@@ -80,8 +80,6 @@ public class SimpleHttpRequest extends Request {
      */
     public SimpleHttpRequest() {
         super();
-        this.httpSession = Mockito.mock(SimpleHttpSession.class, Mockito.CALLS_REAL_METHODS);
-        this.httpSession.setAttributes(new HashMap<String, Object>());
         this.remotePort = SimpleHttpRequest.nextRemotePort();
     }
 
@@ -211,10 +209,6 @@ public class SimpleHttpRequest extends Request {
      */
     @Override
     public HttpSession getSession(final boolean create) {
-        if (this.httpSession == null && create) {
-            this.httpSession = Mockito.mock(SimpleHttpSession.class, Mockito.CALLS_REAL_METHODS);
-            this.httpSession.setAttributes(new HashMap<String, Object>());
-        }
         return this.httpSession;
     }
 

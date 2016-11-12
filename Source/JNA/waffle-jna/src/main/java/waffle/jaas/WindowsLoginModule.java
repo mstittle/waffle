@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.jaas;
 
@@ -20,8 +18,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
@@ -132,10 +130,10 @@ public class WindowsLoginModule implements LoginModule {
             password = passwordCallback.getPassword() == null ? "" : new String(passwordCallback.getPassword());
             passwordCallback.clearPassword();
         } catch (final IOException e) {
-            WindowsLoginModule.LOGGER.trace("{}", e);
+            WindowsLoginModule.LOGGER.trace("", e);
             throw new LoginException(e.toString());
         } catch (final UnsupportedCallbackException e) {
-            WindowsLoginModule.LOGGER.trace("{}", e);
+            WindowsLoginModule.LOGGER.trace("", e);
             throw new LoginException(
                     "Callback {} not available to gather authentication information from the user.".replace("{}", e
                             .getCallback().getClass().getName()));
@@ -145,7 +143,7 @@ public class WindowsLoginModule implements LoginModule {
         try {
             windowsIdentity = this.auth.logonUser(userName, password);
         } catch (final Exception e) {
-            WindowsLoginModule.LOGGER.trace("{}", e);
+            WindowsLoginModule.LOGGER.trace("", e);
             throw new LoginException(e.getMessage());
         }
 
@@ -157,11 +155,19 @@ public class WindowsLoginModule implements LoginModule {
             }
 
             this.principals = new LinkedHashSet<>();
+            // add the main user principal to the subject principals
             this.principals.addAll(WindowsLoginModule.getUserPrincipals(windowsIdentity, this.principalFormat));
             if (this.roleFormat != PrincipalFormat.NONE) {
+                // create the group principal and add roles as members of the group
+                final GroupPrincipal groupList = new GroupPrincipal("Roles");
                 for (final IWindowsAccount group : windowsIdentity.getGroups()) {
-                    this.principals.addAll(WindowsLoginModule.getRolePrincipals(group, this.roleFormat));
+                    for (final Principal role : WindowsLoginModule.getRolePrincipals(group, this.roleFormat)) {
+                        WindowsLoginModule.LOGGER.debug(" group: {}", role.getName());
+                        groupList.addMember(new RolePrincipal(role.getName()));
+                    }
                 }
+                // add the group and roles to the subject principals
+                this.principals.add(groupList);
             }
 
             this.username = windowsIdentity.getFqn();
@@ -292,7 +298,6 @@ public class WindowsLoginModule implements LoginModule {
                 principalsList.add(new UserPrincipal(windowsIdentity.getSidString()));
                 break;
             case NONE:
-                break;
             default:
                 break;
         }

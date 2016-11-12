@@ -1,24 +1,22 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.mock;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.base.Charsets;
-import com.sun.jna.platform.win32.Secur32Util;
 import com.sun.jna.platform.win32.Secur32.EXTENDED_NAME_FORMAT;
+import com.sun.jna.platform.win32.Secur32Util;
 
 import waffle.windows.auth.IWindowsAccount;
 import waffle.windows.auth.IWindowsAuthProvider;
@@ -65,7 +63,7 @@ public class MockWindowsAuthProvider implements IWindowsAuthProvider {
     @Override
     public IWindowsSecurityContext acceptSecurityToken(final String connectionId, final byte[] token,
             final String securityPackage) {
-        return new MockWindowsSecurityContext(new String(token, Charsets.UTF_8));
+        return new MockWindowsSecurityContext(new String(token, StandardCharsets.UTF_8));
     }
 
     /*

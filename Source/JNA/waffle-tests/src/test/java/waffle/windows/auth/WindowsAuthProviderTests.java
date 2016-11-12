@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.windows.auth;
 
@@ -21,12 +19,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import waffle.mock.MockWindowsAccount;
-import waffle.windows.auth.impl.WindowsAccountImpl;
-import waffle.windows.auth.impl.WindowsAuthProviderImpl;
-import waffle.windows.auth.impl.WindowsCredentialsHandleImpl;
-import waffle.windows.auth.impl.WindowsSecurityContextImpl;
-
 import com.google.common.io.BaseEncoding;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.Advapi32Util;
@@ -37,6 +29,12 @@ import com.sun.jna.platform.win32.Netapi32;
 import com.sun.jna.platform.win32.Netapi32Util;
 import com.sun.jna.platform.win32.Sspi;
 import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
+
+import waffle.mock.MockWindowsAccount;
+import waffle.windows.auth.impl.WindowsAccountImpl;
+import waffle.windows.auth.impl.WindowsAuthProviderImpl;
+import waffle.windows.auth.impl.WindowsCredentialsHandleImpl;
+import waffle.windows.auth.impl.WindowsSecurityContextImpl;
 
 /**
  * The Class WindowsAuthProviderTests.
@@ -177,7 +175,7 @@ public class WindowsAuthProviderTests {
                     serverContext = provider.acceptSecurityToken(connectionId, clientContext.getToken(),
                             securityPackage);
                 } catch (final Exception e) {
-                    WindowsAuthProviderTests.LOGGER.error("{}", e);
+                    WindowsAuthProviderTests.LOGGER.error("", e);
                     break;
                 }
 
@@ -289,7 +287,7 @@ public class WindowsAuthProviderTests {
                     serverContext = provider.acceptSecurityToken(connectionId, clientContext.getToken(),
                             securityPackage);
                 } catch (final Exception e) {
-                    WindowsAuthProviderTests.LOGGER.error("{}", e);
+                    WindowsAuthProviderTests.LOGGER.error("", e);
                     break;
                 }
 

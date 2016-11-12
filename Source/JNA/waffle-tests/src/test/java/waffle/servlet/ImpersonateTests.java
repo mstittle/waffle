@@ -1,45 +1,40 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.servlet;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 
 import javax.security.auth.Subject;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
-import waffle.mock.MockWindowsAccount;
-import waffle.mock.http.SimpleFilterChain;
-import waffle.mock.http.SimpleHttpRequest;
-import waffle.mock.http.SimpleHttpResponse;
-import waffle.windows.auth.impl.WindowsAuthProviderImpl;
-
-import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
 import com.sun.jna.WString;
 import com.sun.jna.platform.win32.Advapi32Util;
 import com.sun.jna.platform.win32.LMAccess;
 import com.sun.jna.platform.win32.LMErr;
 import com.sun.jna.platform.win32.Netapi32;
+
+import waffle.mock.MockWindowsAccount;
+import waffle.mock.http.RecordUserNameFilterChain;
+import waffle.mock.http.SimpleHttpRequest;
+import waffle.mock.http.SimpleHttpResponse;
+import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 
 /**
  * The Class ImpersonateTests.
@@ -109,7 +104,7 @@ public class ImpersonateTests {
         request.setMethod("GET");
         final String userHeaderValue = MockWindowsAccount.TEST_USER_NAME + ":" + MockWindowsAccount.TEST_PASSWORD;
         final String basicAuthHeader = "Basic "
-                + BaseEncoding.base64().encode(userHeaderValue.getBytes(Charsets.UTF_8));
+                + BaseEncoding.base64().encode(userHeaderValue.getBytes(StandardCharsets.UTF_8));
         request.addHeader("Authorization", basicAuthHeader);
 
         final SimpleHttpResponse response = new SimpleHttpResponse();
@@ -121,12 +116,9 @@ public class ImpersonateTests {
             this.filter.doFilter(request, response, filterChain);
 
             final Subject subject = (Subject) request.getSession().getAttribute("javax.security.auth.subject");
-            final boolean authenticated = (subject != null && subject.getPrincipals().size() > 0);
+            final boolean authenticated = subject != null && subject.getPrincipals().size() > 0;
             Assert.assertTrue("Test user should be authenticated", authenticated);
 
-            if (subject == null) {
-                return;
-            }
             final Principal principal = subject.getPrincipals().iterator().next();
             Assert.assertTrue(principal instanceof AutoDisposableWindowsPrincipal);
             windowsPrincipal = (AutoDisposableWindowsPrincipal) principal;
@@ -159,7 +151,7 @@ public class ImpersonateTests {
         request.setMethod("GET");
         final String userHeaderValue = MockWindowsAccount.TEST_USER_NAME + ":" + MockWindowsAccount.TEST_PASSWORD;
         final String basicAuthHeader = "Basic "
-                + BaseEncoding.base64().encode(userHeaderValue.getBytes(Charsets.UTF_8));
+                + BaseEncoding.base64().encode(userHeaderValue.getBytes(StandardCharsets.UTF_8));
         request.addHeader("Authorization", basicAuthHeader);
         final SimpleHttpResponse response = new SimpleHttpResponse();
         final RecordUserNameFilterChain filterChain = new RecordUserNameFilterChain();
@@ -170,12 +162,9 @@ public class ImpersonateTests {
             this.filter.doFilter(request, response, filterChain);
 
             final Subject subject = (Subject) request.getSession().getAttribute("javax.security.auth.subject");
-            final boolean authenticated = (subject != null && subject.getPrincipals().size() > 0);
+            final boolean authenticated = subject != null && subject.getPrincipals().size() > 0;
             Assert.assertTrue("Test user should be authenticated", authenticated);
 
-            if (subject == null) {
-                return;
-            }
             final Principal principal = subject.getPrincipals().iterator().next();
             Assert.assertTrue(principal instanceof WindowsPrincipal);
             windowsPrincipal = (WindowsPrincipal) principal;
@@ -190,33 +179,4 @@ public class ImpersonateTests {
             }
         }
     }
-
-    /**
-     * Filter chain that records current username.
-     */
-    public static class RecordUserNameFilterChain extends SimpleFilterChain {
-
-        /** The user name. */
-        private String userName;
-
-        /*
-         * (non-Javadoc)
-         * @see waffle.mock.http.SimpleFilterChain#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse)
-         */
-        @Override
-        public void doFilter(final ServletRequest sreq, final ServletResponse srep) throws IOException,
-                ServletException {
-            this.userName = Advapi32Util.getUserName();
-        }
-
-        /**
-         * Gets the user name.
-         *
-         * @return the user name
-         */
-        public String getUserName() {
-            return this.userName;
-        }
-    }
-
 }

@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.jaas;
 
@@ -27,14 +25,13 @@ import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginException;
 
-import mockit.Deencapsulation;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mockito;
 
+import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 import waffle.windows.auth.PrincipalFormat;
 
 /**
@@ -49,7 +46,8 @@ public class WindowsLoginModuleTest {
     private Subject             subject;
 
     /** The callback handler. */
-    private CallbackHandler     callbackHandler;
+    @Mocked
+    CallbackHandler             callbackHandler;
 
     /** The options. */
     private Map<String, String> options;
@@ -130,13 +128,30 @@ public class WindowsLoginModuleTest {
     }
 
     /**
+     * Commit_with Roles.
+     *
+     * @throws LoginException
+     *             the login exception
+     */
+    @Test
+    public void commit_withRoles() throws LoginException {
+        final Set<Principal> principals = new LinkedHashSet<>();
+        principals.add(new UserPrincipal("FQN"));
+        final GroupPrincipal group = new GroupPrincipal("Roles");
+        group.addMember(new RolePrincipal("WindowsGroup"));
+        principals.add(group);
+        Deencapsulation.setField(this.loginModule, principals);
+        this.loginModule.initialize(this.subject, this.callbackHandler, null, this.options);
+        this.loginModule.commit();
+    }
+
+    /**
      * Inits the.
      */
     @Before
     public void init() {
         this.loginModule = new WindowsLoginModule();
         this.subject = new Subject();
-        this.callbackHandler = Mockito.mock(CallbackHandler.class);
         this.options = new HashMap<>();
     }
 
@@ -200,7 +215,12 @@ public class WindowsLoginModuleTest {
         this.options.put("debug", "true");
         this.loginModule.initialize(this.subject, this.callbackHandler, null, this.options);
         Assert.assertTrue(this.loginModule.isAllowGuestLogin());
-        Mockito.doThrow(new IOException()).when(this.callbackHandler).handle(Matchers.any(Callback[].class));
+        Assert.assertNotNull(new Expectations() {
+            {
+                WindowsLoginModuleTest.this.callbackHandler.handle(this.withInstanceOf(Callback[].class));
+                this.result = new IOException();
+            }
+        });
         this.loginModule.login();
     }
 
@@ -220,8 +240,12 @@ public class WindowsLoginModuleTest {
         this.options.put("debug", "true");
         this.loginModule.initialize(this.subject, this.callbackHandler, null, this.options);
         Assert.assertTrue(this.loginModule.isAllowGuestLogin());
-        Mockito.doThrow(new UnsupportedCallbackException(new NameCallback("Callback Exception")))
-                .when(this.callbackHandler).handle(Matchers.any(Callback[].class));
+        Assert.assertNotNull(new Expectations() {
+            {
+                WindowsLoginModuleTest.this.callbackHandler.handle(this.withInstanceOf(Callback[].class));
+                this.result = new UnsupportedCallbackException(new NameCallback("Callback Exception"));
+            }
+        });
         this.loginModule.login();
     }
 

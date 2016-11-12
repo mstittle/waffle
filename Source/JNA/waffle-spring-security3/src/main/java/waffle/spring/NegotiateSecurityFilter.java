@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.spring;
 
@@ -30,10 +28,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
 
+import waffle.servlet.AutoDisposableWindowsPrincipal;
 import waffle.servlet.WindowsPrincipal;
 import waffle.servlet.spi.SecurityFilterProviderCollection;
 import waffle.util.AuthorizationHeader;
 import waffle.windows.auth.IWindowsIdentity;
+import waffle.windows.auth.IWindowsImpersonationContext;
 import waffle.windows.auth.PrincipalFormat;
 
 /**
@@ -58,6 +58,9 @@ public class NegotiateSecurityFilter extends GenericFilterBean {
 
     /** The allow guest login. */
     private boolean                          allowGuestLogin         = true;
+
+    /** The impersonate. */
+    private boolean                          impersonate;
 
     /** The granted authority factory. */
     private GrantedAuthorityFactory          grantedAuthorityFactory = WindowsAuthenticationToken.DEFAULT_GRANTED_AUTHORITY_FACTORY;
@@ -104,7 +107,7 @@ public class NegotiateSecurityFilter extends GenericFilterBean {
                 }
             } catch (final IOException e) {
                 NegotiateSecurityFilter.LOGGER.warn("error logging in user: {}", e.getMessage());
-                NegotiateSecurityFilter.LOGGER.trace("{}", e);
+                NegotiateSecurityFilter.LOGGER.trace("", e);
                 this.sendUnauthorized(response, true);
                 return;
             }
@@ -115,12 +118,14 @@ public class NegotiateSecurityFilter extends GenericFilterBean {
                 return;
             }
 
+            IWindowsImpersonationContext ctx = null;
             try {
                 NegotiateSecurityFilter.LOGGER.debug("logged in user: {} ({})", windowsIdentity.getFqn(),
                         windowsIdentity.getSidString());
 
-                final WindowsPrincipal principal = new WindowsPrincipal(windowsIdentity, this.principalFormat,
-                        this.roleFormat);
+                final WindowsPrincipal principal = impersonate ? new AutoDisposableWindowsPrincipal(windowsIdentity,
+                        this.principalFormat, this.roleFormat) : new WindowsPrincipal(windowsIdentity,
+                        this.principalFormat, this.roleFormat);
 
                 NegotiateSecurityFilter.LOGGER.debug("roles: {}", principal.getRolesString());
 
@@ -133,12 +138,23 @@ public class NegotiateSecurityFilter extends GenericFilterBean {
 
                 NegotiateSecurityFilter.LOGGER.info("successfully logged in user: {}", windowsIdentity.getFqn());
 
-            } finally {
-                windowsIdentity.dispose();
-            }
-        }
+                if (this.impersonate) {
+                    LOGGER.debug("impersonating user");
+                    ctx = windowsIdentity.impersonate();
+                }
 
-        chain.doFilter(request, response);
+                chain.doFilter(request, response);
+            } finally {
+                if (this.impersonate && ctx != null) {
+                    NegotiateSecurityFilter.LOGGER.debug("terminating impersonation");
+                    ctx.revertToSelf();
+                } else {
+                    windowsIdentity.dispose();
+                }
+            }
+        } else {
+            chain.doFilter(request, response);
+        }
     }
 
     /*
@@ -274,6 +290,25 @@ public class NegotiateSecurityFilter extends GenericFilterBean {
      */
     public void setAllowGuestLogin(final boolean value) {
         this.allowGuestLogin = value;
+    }
+
+    /**
+     * Enable/Disable impersonation.
+     *
+     * @param value
+     *            true to enable impersonation, false otherwise
+     */
+    public void setImpersonate(final boolean value) {
+        this.impersonate = value;
+    }
+
+    /**
+     * Checks if is impersonate.
+     *
+     * @return true if impersonation is enabled, false otherwise
+     */
+    public boolean isImpersonate() {
+        return this.impersonate;
     }
 
     /**

@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.util;
 
@@ -96,16 +94,16 @@ public class AuthorizationHeaderTests {
      * Test is sp nego message.
      */
     @Test
-    public void testIsSPNegoMessage() {
+    public void testIsSPNegTokenInitMessage() {
         final SimpleHttpRequest request = new SimpleHttpRequest();
         final AuthorizationHeader header = new AuthorizationHeader(request);
-        Assert.assertFalse(header.isSPNegoMessage());
+        Assert.assertFalse(header.isSPNegTokenInitMessage());
         request.addHeader("Authorization", "");
-        Assert.assertFalse(header.isSPNegoMessage());
+        Assert.assertFalse(header.isSPNegTokenInitMessage());
         request.addHeader(
                 "Authorization",
                 "Negotiate YHYGBisGAQUFAqBsMGqgMDAuBgorBgEEAYI3AgIKBgkqhkiC9xIBAgIGCSqGSIb3EgECAgYKKwYBBAGCNwICHqI2BDROVExNU1NQAAEAAACXsgjiAwADADEAAAAJAAkAKAAAAAYBsR0AAAAPR0xZQ0VSSU5FU0FE");
-        Assert.assertTrue(header.isSPNegoMessage());
+        Assert.assertTrue(header.isSPNegTokenInitMessage());
     }
 
     /**
@@ -143,6 +141,7 @@ public class AuthorizationHeaderTests {
 
         final BDDSoftAssertions softly = new BDDSoftAssertions();
         softly.thenThrownBy(new ThrowingCallable() {
+
             @Override
             public void call() throws Exception {
                 header.getTokenBytes();

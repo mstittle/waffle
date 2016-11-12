@@ -1,46 +1,41 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.apache;
 
+import org.apache.catalina.Context;
+import org.apache.catalina.Engine;
 import org.apache.catalina.LifecycleException;
-import org.apache.catalina.Valve;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import waffle.apache.catalina.SimpleContext;
-import waffle.apache.catalina.SimpleEngine;
+import com.google.common.io.BaseEncoding;
+import com.sun.jna.platform.win32.Sspi;
+import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
+
+import mockit.Expectations;
+import mockit.Mocked;
 import waffle.apache.catalina.SimpleHttpRequest;
 import waffle.apache.catalina.SimpleHttpResponse;
-import waffle.apache.catalina.SimplePipeline;
-import waffle.apache.catalina.SimpleRealm;
-import waffle.apache.catalina.SimpleServletContext;
 import waffle.windows.auth.IWindowsCredentialsHandle;
 import waffle.windows.auth.PrincipalFormat;
 import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 import waffle.windows.auth.impl.WindowsCredentialsHandleImpl;
 import waffle.windows.auth.impl.WindowsSecurityContextImpl;
-
-import com.google.common.io.BaseEncoding;
-import com.sun.jna.platform.win32.Sspi;
-import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 
 /**
  * Waffle Tomcat Authenticator Tests.
@@ -55,6 +50,12 @@ public class NegotiateAuthenticatorTests {
     /** The authenticator. */
     private NegotiateAuthenticator authenticator;
 
+    @Mocked
+    Context                        context;
+
+    @Mocked
+    Engine                         engine;
+
     /**
      * Sets the up.
      *
@@ -64,19 +65,17 @@ public class NegotiateAuthenticatorTests {
     @Before
     public void setUp() throws LifecycleException {
         this.authenticator = new NegotiateAuthenticator();
-        final SimpleContext ctx = Mockito.mock(SimpleContext.class, Mockito.CALLS_REAL_METHODS);
-        ctx.setServletContext(Mockito.mock(SimpleServletContext.class, Mockito.CALLS_REAL_METHODS));
-        ctx.setPath("/");
-        ctx.setName("SimpleContext");
-        ctx.setRealm(Mockito.mock(SimpleRealm.class, Mockito.CALLS_REAL_METHODS));
-        final SimpleEngine engine = Mockito.mock(SimpleEngine.class, Mockito.CALLS_REAL_METHODS);
-        ctx.setParent(engine);
-        final SimplePipeline pipeline = Mockito.mock(SimplePipeline.class, Mockito.CALLS_REAL_METHODS);
-        pipeline.setValves(new Valve[0]);
-        engine.setPipeline(pipeline);
-        ctx.setPipeline(pipeline);
-        ctx.setAuthenticator(this.authenticator);
-        this.authenticator.setContainer(ctx);
+        this.authenticator.setContainer(this.context);
+        Assert.assertNotNull(new Expectations() {
+            {
+                NegotiateAuthenticatorTests.this.context.getName();
+                this.result = "context";
+                NegotiateAuthenticatorTests.this.context.getParent();
+                this.result = NegotiateAuthenticatorTests.this.engine;
+                NegotiateAuthenticatorTests.this.context.getParent();
+                this.result = null;
+            }
+        });
         this.authenticator.start();
     }
 
@@ -267,7 +266,7 @@ public class NegotiateAuthenticatorTests {
                 try {
                     authenticated = this.authenticator.authenticate(request, response, null);
                 } catch (final Exception e) {
-                    NegotiateAuthenticatorTests.LOGGER.error("{}", e);
+                    NegotiateAuthenticatorTests.LOGGER.error("", e);
                     return;
                 }
 

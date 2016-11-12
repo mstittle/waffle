@@ -1,15 +1,13 @@
 /**
  * Waffle (https://github.com/dblock/waffle)
  *
- * Copyright (c) 2010 - 2015 Application Security, Inc.
+ * Copyright (c) 2010-2016 Application Security, Inc.
  *
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * All rights reserved. This program and the accompanying materials are made available under the terms of the Eclipse
+ * Public License v1.0 which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html.
  *
- * Contributors:
- *     Application Security, Inc.
+ * Contributors: Application Security, Inc.
  */
 package waffle.servlet;
 
@@ -25,6 +23,13 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.io.BaseEncoding;
+import com.sun.jna.platform.win32.Advapi32Util;
+import com.sun.jna.platform.win32.Secur32.EXTENDED_NAME_FORMAT;
+import com.sun.jna.platform.win32.Secur32Util;
+import com.sun.jna.platform.win32.Sspi;
+import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
+
 import waffle.mock.MockWindowsAuthProvider;
 import waffle.mock.MockWindowsIdentity;
 import waffle.mock.http.SimpleFilterChain;
@@ -37,13 +42,6 @@ import waffle.windows.auth.impl.WindowsAccountImpl;
 import waffle.windows.auth.impl.WindowsAuthProviderImpl;
 import waffle.windows.auth.impl.WindowsCredentialsHandleImpl;
 import waffle.windows.auth.impl.WindowsSecurityContextImpl;
-
-import com.google.common.io.BaseEncoding;
-import com.sun.jna.platform.win32.Advapi32Util;
-import com.sun.jna.platform.win32.Secur32.EXTENDED_NAME_FORMAT;
-import com.sun.jna.platform.win32.Secur32Util;
-import com.sun.jna.platform.win32.Sspi;
-import com.sun.jna.platform.win32.Sspi.SecBufferDesc;
 
 /**
  * Waffle Tomcat Security Filter Tests.
@@ -189,7 +187,7 @@ public class NegotiateSecurityFilterTests {
                 this.filter.doFilter(request, response, filterChain);
 
                 final Subject subject = (Subject) request.getSession().getAttribute("javax.security.auth.subject");
-                authenticated = (subject != null && subject.getPrincipals().size() > 0);
+                authenticated = subject != null && subject.getPrincipals().size() > 0;
 
                 if (authenticated) {
                     Assertions.assertThat(response.getHeaderNamesSize()).isGreaterThanOrEqualTo(0);
